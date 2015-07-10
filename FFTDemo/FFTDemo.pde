@@ -21,15 +21,15 @@ FFT         fft;
 
 void setup()
 {
-  size(2048, 200, P3D);
-  frameRate(30);
+  // Set width to a power of 2.
+  size(512, 200, P3D);
   
   minim = new Minim(this);
   
   // specify that we want the audio buffers of the AudioPlayer
   // to be 1024 samples long because our FFT needs to have 
   // a power-of-two buffer size and this is a good size.
-  jingle = minim.loadFile("jingle.mp3", 4096);
+  jingle = minim.loadFile("jingle.mp3", width*2);
   
   // loop the file indefinitely
   jingle.loop();

@@ -37,14 +37,18 @@ void draw() {
   background(0);
   stroke(255);
 
-//  // use the mix buffer to draw the waveforms.
-//  for (int i = 0; i < input.bufferSize() - 1; i++)
-//  {
-//    float x1 = map(i, 0, kick.bufferSize(), 0, width);
-//    float x2 = map(i+1, 0, kick.bufferSize(), 0, width);
-//    line(x1, 50 - kick.mix.get(i)*50, x2, 50 - kick.mix.get(i+1)*50);
-//    line(x1, 150 - snare.mix.get(i)*50, x2, 150 - snare.mix.get(i+1)*50);
-//  }
+  // draw the waveforms
+  // the values returned by left.get() and right.get() will be between -1 and 1,
+  // so we need to scale them up to see the waveform
+  // note that if the file is MONO, left.get() and right.get() will return the same value
+  for(int i = 0; i < input.bufferSize() - 1; i++)
+  {
+    float x1 = map( i, 0, input.bufferSize(), 0, width );
+    float x2 = map( i+1, 0, input.bufferSize(), 0, width );
+    line( x1, 50 + input.left.get(i)*50, x2, 50 + input.left.get(i+1)*50 );
+    line( x1, 150 + input.right.get(i)*50, x2, 150 + input.right.get(i+1)*50 );
+  }
+
 }
 
 // when spacebar is pressed, plays the file
