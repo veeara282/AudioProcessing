@@ -22,11 +22,38 @@ import ddf.minim.effects.*;
  */
 
 Minim minim;
+AudioSample input, output;
 
 void setup() {
+  size(512, 200, P2D);
+
   minim = new Minim(this);
+
+  input = minim.loadSample("jingle.mp3", 2048);
 }
 
+
 void draw() {
-  
+  background(0);
+  stroke(255);
+
+//  // use the mix buffer to draw the waveforms.
+//  for (int i = 0; i < input.bufferSize() - 1; i++)
+//  {
+//    float x1 = map(i, 0, kick.bufferSize(), 0, width);
+//    float x2 = map(i+1, 0, kick.bufferSize(), 0, width);
+//    line(x1, 50 - kick.mix.get(i)*50, x2, 50 - kick.mix.get(i+1)*50);
+//    line(x1, 150 - snare.mix.get(i)*50, x2, 150 - snare.mix.get(i+1)*50);
+//  }
 }
+
+// when spacebar is pressed, plays the file
+void keyPressed() 
+{
+  if (key == ' ' || key == 'i' || key == 'I')
+  {
+    // plays in another thread
+    input.trigger();
+  }
+}
+
