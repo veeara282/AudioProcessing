@@ -15,7 +15,7 @@ public class Train {
     // Has to be a power of two
     public static final int VECTOR_SIZE = 1024;
 
-    Random r = new Random();
+    public static final Random r = new Random();
 
     public static void main(String[] args) throws IOException {
 	NeuralNetwork nnet;
@@ -64,7 +64,7 @@ public class Train {
 	// Add random noise with the same frequency
 	for (int i = 0; i < 4; i++) {
 	    if (i != waveType) {
-		addFrequency(input, freq, maxAmp * r.nextDouble() / 2, i);
+		addFrequency(input, baseFreq, maxAmp * r.nextDouble() / 2, i);
 	    }
 	}
 
