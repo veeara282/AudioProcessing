@@ -24,7 +24,7 @@ public class Train {
 	// The program should always be able to read and write the file
 	// because it created it
 	File file = new File("data/chiptune-converter.nnet");
-	if (file.canRead() && file.canWrite()) {
+	if (file.exists() && file.canRead() && file.canWrite()) {
 	    nnet = NeuralNetwork.load(file.getPath());
 	}
 	else {
@@ -42,7 +42,7 @@ public class Train {
 
     public static DataSet randomFFTData() {
 	DataSet trainingSet = new DataSet(VECTOR_SIZE, VECTOR_SIZE);
-	for (int i = 0; i < 5000; i++) {
+	for (int i = 0; i < 50; i++) {
 	    trainingSet.addRow(randomFFT());
 	}
 	return trainingSet;
@@ -54,7 +54,7 @@ public class Train {
 	
 	// Code for randomly generating the input here
 	double maxAmp = r.nextDouble(); // [0.0, 1.0)
-	int baseFreq = r.nextInt(VECTOR_SIZE);
+	int baseFreq = 1 + r.nextInt(VECTOR_SIZE - 1); // cannot be zero
 	int waveType = r.nextInt(4);
 	addFrequency(output, baseFreq, maxAmp, waveType);
 
