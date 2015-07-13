@@ -23,19 +23,32 @@ import ddf.minim.effects.*;
 
 Minim minim;
 AudioSample input, output;
+FFT fft;
+double[] fftRep;
 
 void setup() {
   size(512, 200, P2D);
 
   minim = new Minim(this);
 
-  input = minim.loadSample("jingle.mp3", 2048);
+  input = minim.loadSample("jingle.mp3", 2048); 
+  
+  fft = new FFT( input.bufferSize(), input.sampleRate() );
+  
+  fftRep = new double[input.bufferSize()];
+  
+  //copies the middle frequency of each band in the fft into a double[] to use in the neural network
+  for(int i=0; i<fftRep.length; i++){
+    fftRep[i]=fft.indexToFreq(i);
+  }
 }
 
 
 void draw() {
   background(0);
   stroke(255);
+  
+  fft.forward(input.mix);
 
   // draw the waveforms
   // the values returned by left.get() and right.get() will be between -1 and 1,
