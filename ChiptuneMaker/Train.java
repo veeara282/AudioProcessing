@@ -53,11 +53,46 @@ public class Train {
 	        output = new double[VECTOR_SIZE];
 	
 	// Code for randomly generating the input here
+	double maxAmp = r.nextDouble(); // [0.0, 1.0)
+	int baseFreq = r.nextInt(VECTOR_SIZE);
+	int waveType = r.nextInt(4);
+	addFrequency(output, baseFreq, maxAmp, waveType);
 
 	// Copy input to output and leave it alone
+	System.arraycopy(output, 0, input, 0, VECTOR_SIZE);
 
-	// Tweak input
+	// Add random noise with the same frequency
+	for (int i = 0; i < 4; i++) {
+	    if (i != waveType) {
+		addFrequency(input, freq, maxAmp * r.nextDouble() / 2, i);
+	    }
+	}
 
 	return new DataSetRow(input, output);
+    }
+
+    public static final int SINE = 0, SQUARE = 1, TRIANGLE = 2, SAWTOOTH = 3;
+
+    public static void addFrequency(double[] array, int freq, double amp, int waveType) {
+	array[freq] += amp;
+	switch (waveType) {
+	case SAWTOOTH:
+	    for (int i = 2; i < array.length / freq; i++) {
+		array[freq*i] += amp/i;
+	    }
+	    return;
+	case SQUARE:
+	    for (int i = 3; i < array.length / freq; i += 2) {
+		array[freq*i] += amp/i;
+	    }
+	    return;
+	case TRIANGLE:
+	    for (int i = 3; i < array.length / freq; i += 2) {
+		array[freq*i] += amp/(i*i);
+	    }
+	    return;
+	default:
+	    return;
+	}
     }
 }
