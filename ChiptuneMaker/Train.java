@@ -6,6 +6,17 @@ import org.neuroph.core.*;
 import org.neuroph.core.data.*;
 import org.neuroph.nnet.*;
 
+// Encog imports
+import org.encog.Encog;
+import org.encog.engine.network.activation.ActivationSigmoid;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataPair;
+import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLDataSet;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+
 /**
  * Run this class to train the included neural network on a
  * randomly generated data set.
@@ -17,38 +28,57 @@ public class Train {
 
     public static final Random r = new Random();
 
+    public static final File file = new File("data/neural-network.blob");
+
     public static void main(String[] args) throws IOException {
-	NeuralNetwork nnet;
+	BasicNetwork net;
 
 	// Open saved neural network or create new one
 	// The program should always be able to read and write the file
 	// because it created it
-	File file = new File("data/chiptune-converter.nnet");
 	if (file.exists() && file.canRead() && file.canWrite()) {
-	    nnet = NeuralNetwork.load(file.getPath());
+	    net = load();
 	}
 	else {
 	    file.createNewFile();
-	    nnet = new Perceptron(VECTOR_SIZE, VECTOR_SIZE);
+	    net = new BasicNetwork();
+	    net.addLayer(new BasicLayer(null, true, VECTOR_SIZE));
+	    net.addLayer(new BasicLayer(new ActivationSigmoid(), true, VECTOR_SIZE));
+	    net.addLayer(new BasicLayer(new ActivationSigmoid(), false, VECTOR_SIZE));
+	    net.getStructure().finalizeStructure();
+	    net.reset();
 	}
 
-	// Train on randomly generated FFT spectrum data
-	DataSet trainingSet = randomFFTData();
-	nnet.learn(trainingSet);
+	// Randomly generate training data
+	MLDataSet trainingSet = randomFFTData();
+	
+	// Train to your heart's content!
+	// tolerance: 0.01
+	final ResilientPropagation train = new ResilientPropagation(net, trainingSet);
+
+	int epoch = 1;
+
+	do {
+	    train.iteration();
+	    System.out.println("Epoch #" + epoch + " Error:" + train.getError());
+	    epoch++;
+	} while(train.getError() > 0.01);
+	train.finishTraining();
 
 	// Save file - should always work
-	nnet.save(file.getPath());
+	//	net.save(file.getPath());
+	save(net);
     }
 
-    public static DataSet randomFFTData() {
-	DataSet trainingSet = new DataSet(VECTOR_SIZE, VECTOR_SIZE);
+    public static MLDataSet randomFFTData() {
+	MLDataSet trainingSet = new BasicMLDataSet();
 	for (int i = 0; i < 50; i++) {
-	    trainingSet.addRow(randomFFT());
+	    trainingSet.add(randomFFT());
 	}
 	return trainingSet;
     }
 
-    public static DataSetRow randomFFT() {
+    public static MLDataPair randomFFT() {
 	double[] input = new double[VECTOR_SIZE],
 	        output = new double[VECTOR_SIZE];
 	
@@ -68,7 +98,7 @@ public class Train {
 	    }
 	}
 
-	return new DataSetRow(input, output);
+	return new BasicMLDataPair(input, output);
     }
 
     public static final int SINE = 0, SQUARE = 1, TRIANGLE = 2, SAWTOOTH = 3;
@@ -95,4 +125,31 @@ public class Train {
 	    return;
 	}
     }
+
+    public static BasicNetwork load() {
+	try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(file))) {
+		return (BasicNetwork) input.readObject();
+	    }
+	catch (ClassNotFoundException e) {
+	    System.err.println("Looks like Encog isn't imported properly :(");
+	    System.exit(1);
+	    return null;
+	}
+	catch (IOException e) {
+	    e.printStackTrace();
+	    return null;
+	}
+    }
+
+    public static boolean save(BasicNetwork net) {
+	try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file), false)) {
+		output.writeObject(net);
+		return true;
+	    }
+	catch (IOException e) {
+	    e.printStackTrace();
+	    return false;
+	}
+    }
+
 }
