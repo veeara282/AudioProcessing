@@ -2,7 +2,6 @@ import java.util.Random;
 import java.io.*;
 
 // Encog imports
-import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.*;
 import org.encog.ml.data.basic.*;
