@@ -1,18 +1,11 @@
 import java.util.Random;
 import java.io.*;
 
-// Neuroph imports
-import org.neuroph.core.*;
-import org.neuroph.core.data.*;
-import org.neuroph.nnet.*;
-
 // Encog imports
 import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
-import org.encog.ml.data.MLData;
-import org.encog.ml.data.MLDataPair;
-import org.encog.ml.data.MLDataSet;
-import org.encog.ml.data.basic.BasicMLDataSet;
+import org.encog.ml.data.*;
+import org.encog.ml.data.basic.*;
 import org.encog.neural.networks.BasicNetwork;
 import org.encog.neural.networks.layers.BasicLayer;
 import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
@@ -98,7 +91,7 @@ public class Train {
 	    }
 	}
 
-	return new BasicMLDataPair(input, output);
+	return new BasicMLDataPair(new BasicMLData(input), new BasicMLData(output));
     }
 
     public static final int SINE = 0, SQUARE = 1, TRIANGLE = 2, SAWTOOTH = 3;
@@ -142,7 +135,7 @@ public class Train {
     }
 
     public static boolean save(BasicNetwork net) {
-	try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file), false)) {
+	try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file, false))) {
 		output.writeObject(net);
 		return true;
 	    }
