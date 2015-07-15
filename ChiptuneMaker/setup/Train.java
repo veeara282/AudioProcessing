@@ -20,7 +20,7 @@ public class Train {
 
     public static final Random r = new Random();
 
-    public static final File file = new File("data/neural-network.blob");
+    public static final File file = new File("../data/neural-network.blob");
 
     public static void main(String[] args) throws IOException {
 	BasicNetwork net;
