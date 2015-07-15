@@ -1,0 +1,5 @@
+#!/bin/sh
+
+javac -cp libraries/encog-core-3.3.0.jar XORHelloWorld.java 
+
+time java -cp libraries/encog-core-3.3.0.jar:. XORHelloWorld
