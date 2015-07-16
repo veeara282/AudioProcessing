@@ -1,3 +1,5 @@
+import java.io.*;
+
 import ddf.minim.spi.*;
 import ddf.minim.signals.*;
 import ddf.minim.*;
@@ -5,6 +7,8 @@ import ddf.minim.analysis.*;
 import ddf.minim.ugens.*; // waveform templates
 import ddf.minim.effects.*;
 import javax.sound.sampled.*;
+
+import org.encog.neural.networks.BasicNetwork;
 
 /**
  * Converts a user-provided audio file to a chiptune.
@@ -27,12 +31,14 @@ AudioSample input, output;
 FFT fft;
 float[] buffer;
 
+BasicNetwork net;
+
 void setup() {
   size(512, 200, P2D);
 
+  net = load();
+
   minim = new Minim(this);
-
-
 
   input = minim.loadSample("jingle.mp3", 2048); 
   input.trigger();
