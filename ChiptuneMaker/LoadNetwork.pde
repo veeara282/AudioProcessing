@@ -1,10 +1,9 @@
-File file = new File("data/neural-network.blob");
-
 BasicNetwork load() {
-  ObjectInputStream in = null;
   try {
-    in = new ObjectInputStream(new FileInputStream(file));
-    return (BasicNetwork) in.readObject();
+    ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+    BasicNetwork yolo = (BasicNetwork) in.readObject();
+    in.close();
+    return yolo;
   }
   catch (ClassNotFoundException e) {
     System.err.println("Looks like Encog isn't imported properly :(");
@@ -15,7 +14,5 @@ BasicNetwork load() {
     e.printStackTrace();
     return null;
   }
-  finally {
-    in.close();
-  }
 }
+
