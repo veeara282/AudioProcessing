@@ -29,7 +29,7 @@ void setup()
   // specify that we want the audio buffers of the AudioPlayer
   // to be 1024 samples long because our FFT needs to have 
   // a power-of-two buffer size and this is a good size.
-  jingle = minim.loadFile("jingle.mp3", width*2);
+  jingle = minim.loadFile("uptownfunk.mp3", width*2);
   
   // loop the file indefinitely
   jingle.loop();

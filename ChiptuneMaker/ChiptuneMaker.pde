@@ -105,8 +105,11 @@ void setup() {
 
     // filter
     for (int i = 0; i < buffer[chunk].length; i++) {
-      if (buffer[chunk][i] < 0.01) {
+      if (buffer[chunk][i] < 0.1) {
         buffer[chunk][i] = 0;
+      }
+      else {
+        buffer[chunk][i] = 10;
       }
     }
 
