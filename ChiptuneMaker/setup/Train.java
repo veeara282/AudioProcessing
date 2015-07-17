@@ -2,6 +2,7 @@ import java.util.Random;
 import java.io.*;
 
 // Encog imports
+import org.encog.Encog;
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.*;
 import org.encog.ml.data.basic.*;
@@ -36,6 +37,7 @@ public class Train {
 	    net = new BasicNetwork();
 	    net.addLayer(new BasicLayer(null, true, VECTOR_SIZE));
 	    net.addLayer(new BasicLayer(new ActivationSigmoid(), true, VECTOR_SIZE));
+	    net.addLayer(new BasicLayer(new ActivationSigmoid(), true, VECTOR_SIZE));
 	    net.addLayer(new BasicLayer(new ActivationSigmoid(), false, VECTOR_SIZE));
 	    net.getStructure().finalizeStructure();
 	    net.reset();
@@ -59,6 +61,9 @@ public class Train {
 
 	// Save file - should always work
 	save(net);
+
+	// Can't leave out this line
+	Encog.getInstance().shutdown();
     }
 
     public static MLDataSet randomFFTData() {
@@ -154,11 +159,14 @@ public class Train {
     }
 
     public static boolean save(BasicNetwork net) {
+	System.out.print("Saving...");
 	try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(file, false))) {
 		output.writeObject(net);
+		System.out.println(" Done.");
 		return true;
 	    }
 	catch (IOException e) {
+	    System.out.println();
 	    e.printStackTrace();
 	    return false;
 	}
