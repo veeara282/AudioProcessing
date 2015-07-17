@@ -64,8 +64,13 @@ public class Train {
 
     public static MLDataSet randomFFTData() {
 	MLDataSet trainingSet = new BasicMLDataSet();
+	// Generate 50 single-frequency examples
 	for (int i = 0; i < 50; i++) {
 	    trainingSet.add(randomFFT());
+	}
+	// Combine them in 50 ways
+	for (int i = 0; i < 150; i++) {
+	    trainingSet.add(randomCombo(trainingSet));
 	}
 	return trainingSet;
     }
@@ -116,6 +121,22 @@ public class Train {
 	default:
 	    return;
 	}
+    }
+
+    public static MLDataPair randomCombo(MLDataSet set) {
+	// two different random numbers
+	int i = r.nextInt((int) set.size());
+	int j = i;
+	while (j == i) {
+	    j = r.nextInt((int) set.size());
+	}
+	BasicMLData
+	    ix = (BasicMLData) set.get(i).getInput(),
+	    iy = (BasicMLData) set.get(i).getIdeal(),
+	    jx = (BasicMLData) set.get(j).getInput(), 
+	    jy = (BasicMLData) set.get(j).getIdeal();
+	MLData rx = ix.plus(jx), ry = iy.plus(jy);
+	return new BasicMLDataPair(rx, ry);
     }
 
     public static BasicNetwork load() {
