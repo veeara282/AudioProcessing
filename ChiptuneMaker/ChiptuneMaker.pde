@@ -105,11 +105,11 @@ void setup() {
 
     // filter
     for (int i = 0; i < buffer[chunk].length; i++) {
-      if (buffer[chunk][i] < 0.1) {
-        buffer[chunk][i] = 0;
-      }
-      else {
-        buffer[chunk][i] = 10;
+      if (buffer[chunk][i] < 0.01) {
+        //buffer[chunk][i] = 0;
+        fft.setFreq(i,0);
+      }else{
+        fft.setFreq(i,4*buffer[chunk][i]);
       }
     }
 
@@ -162,10 +162,12 @@ void keyPressed() {
   case 'I': 
   case 'i':
     input.trigger();
+    output.stop();
     break;
   case 'O': 
   case 'o':
     output.trigger();
+    input.stop();
   }
 }
 
