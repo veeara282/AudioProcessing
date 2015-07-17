@@ -40,7 +40,7 @@ File file;
 BasicNetwork net;
 
 void setup() {
-  size(512, 200, P2D);
+  size(1024, 200, P2D);
   // FIXME why is the loading screen delayed?
   background(0);
   fill(255);
@@ -53,7 +53,7 @@ void setup() {
   net = load();
 
   minim = new Minim(this);
-  
+
   int samples = 1024;
 
   input = minim.loadSample("jingle.mp3", samples); 
@@ -69,7 +69,7 @@ void setup() {
   int numChunks = numSamples/samples; //the number of complete 1024-sample chunks
   int numLeftover = numSamples%samples; //the number of samples leftover after dividing it into chunks
 
-  float[] leftChannel = input.getChannel(AudioSample.LEFT); //all real sample values
+    float[] leftChannel = input.getChannel(AudioSample.LEFT); //all real sample values
 
   float[] rightChannel = input.getChannel(AudioSample.RIGHT); //all imaginary sample values
 
@@ -102,7 +102,7 @@ void setup() {
     MLData dataOut = net.compute(dataIn);
     // ...then put back in buffer
     buffer[chunk] = unpack(dataOut);
-    
+
     // filter
     for (int i = 0; i < buffer[chunk].length; i++) {
       if (buffer[chunk][i] < 0.01) {
@@ -137,23 +137,41 @@ void setup() {
 
 void draw() {
   background(0);
-  stroke(255);
+  
+  fill(255);
+  textSize(16);
+  textAlign(LEFT, TOP);
+  text("Press I to hear input, O to hear output", 10, 10);
 
   // draw the waveforms
   // the values returned by left.get() and right.get() will be between -1 and 1,
   // so we need to scale them up to see the waveform
   // note that if the file is MONO, left.get() and right.get() will return the same value
 
-  for (int i = 0; i < output.bufferSize () - 1; i++)
-  {
-    float x1 = map( i, 0, output.bufferSize(), 0, width );
-    float x2 = map( i+1, 0, output.bufferSize(), 0, width );
-    line( x1, 50 + output.left.get(i)*50, x2, 50 + output.left.get(i+1)*50 );
-    line( x1, 150 + output.right.get(i)*50, x2, 150 + output.right.get(i+1)*50 );
-  }
+  // input first (behind output)
+  drawWaveform(input, #FF0000);
+  // then output (semitransparent)
+  drawWaveform(output, color(255, 127));
 }
 
 void keyPressed() {
-  output.trigger();
+  switch (key) {
+  case 'I': 
+  case 'i':
+    input.trigger();
+    break;
+  case 'O': 
+  case 'o':
+    output.trigger();
+  }
 }
 
+void drawWaveform(AudioSample sample, color c) {
+  stroke(c);
+  for (int i = 0; i < sample.bufferSize () - 1; i++) {
+    float x1 = map(i, 0, sample.bufferSize(), 0, width);
+    float x2 = map(i+1, 0, sample.bufferSize(), 0, width);
+    line(x1, 50 + sample.left.get(i) * 50, x2, 50 + sample.left.get(i+1) * 50);
+    line(x1, 150 + sample.right.get(i) * 50, x2, 150 + sample.right.get(i+1) * 50);
+  }
+}
