@@ -45,7 +45,7 @@ public class Train {
 	MLDataSet trainingSet = randomFFTData();
 	
 	// Train to your heart's content!
-	// tolerance: 0.01
+	// tolerance: 0.001
 	final ResilientPropagation train = new ResilientPropagation(net, trainingSet);
 
 	int epoch = 1;
@@ -54,11 +54,10 @@ public class Train {
 	    train.iteration();
 	    System.out.println("Epoch #" + epoch + " Error:" + train.getError());
 	    epoch++;
-	} while(train.getError() > 0.01);
+	} while(train.getError() > 0.001);
 	train.finishTraining();
 
 	// Save file - should always work
-	//	net.save(file.getPath());
 	save(net);
     }
 
@@ -68,7 +67,7 @@ public class Train {
 	for (int i = 0; i < 50; i++) {
 	    trainingSet.add(randomFFT());
 	}
-	// Combine them in 50 ways
+	// Combine them in 150 ways
 	for (int i = 0; i < 150; i++) {
 	    trainingSet.add(randomCombo(trainingSet));
 	}
