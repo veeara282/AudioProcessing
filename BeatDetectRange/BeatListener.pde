@@ -1,12 +1,14 @@
 class BeatListener {
 
-  BeatDetect beatDetect;
+  //  BeatDetect beatDetect;
+  FFT fft;
   AudioSource audio;
   ArrayList<NoteListener> listeners;
 
   BeatListener(AudioSource src) {
     audio = src;
-    beatDetect = new BeatDetect(src.bufferSize(), src.sampleRate());
+    //    beatDetect = new BeatDetect(src.bufferSize(), src.sampleRate());
+    fft = new FFT(src.bufferSize(), src.sampleRate());
     listeners = new ArrayList<NoteListener>();
     // A0-C8 (piano range)
     for (int i = 21; i < 108; i++) {
@@ -16,11 +18,15 @@ class BeatListener {
 
   // Called each time draw() is called
   void draw() {
-    beatDetect.detect(audio.mix);
-    for (NoteListener l: listeners) {
-      int min = minBand(l.midi), max = maxBand(l.midi);
-      if (beatDetect.isRange(min, max, (max - min) / 2)) {
-        l.notePlayed();
+    //    beatDetect.detect(audio.mix);
+    fft.forward(audio.left.toArray(), audio.right.toArray());
+    for (NoteListener l : listeners) {
+      //      int min = minBand(l.midi), max = maxBand(l.midi);
+      //      if (beatDetect.isRange(min, max, (max - min) / 2)) {
+      //      float f = freq(l.midi);
+      float amp = ampRange(l.midi);
+      if (amp >= 0.5) {
+        l.notePlayed(amp);
       }
       l.draw();
     }
@@ -41,11 +47,20 @@ class BeatListener {
   }
 
   int minBand(int midi) {
-    return (int) (minFreq(midi) * audio.bufferSize() / audio.sampleRate());
+    return fft.freqToIndex(minFreq(midi));
   }
 
   int maxBand(int midi) {
-    return (int) (maxFreq(midi) * audio.bufferSize() / audio.sampleRate());
+    return fft.freqToIndex(maxFreq(midi));
+  }
+
+  float ampRange(int midi) {
+    float totAmp = 0.0;
+    int min = minBand(midi), max = maxBand(midi), diff = max - min;
+    for (int band = min; band <= max; band++) {
+      totAmp += fft.getBand(band) / fft.indexToFreq(band);
+    }
+    return totAmp / diff;
   }
 }
 

@@ -19,11 +19,11 @@ BeatListener beat;
 
 void setup()
 {
-  size(87*20, 20, P2D);
+  size(87*20, 40, P2D);
   minim = new Minim(this);
   song = minim.loadFile("marcus_kellis_theme.mp3", 2048);
   beat = new BeatListener(song);
-  song.play();
+  song.loop();
 
   ellipseMode(RADIUS);
 }
