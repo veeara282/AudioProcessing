@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Arrays;
 
 import ddf.minim.spi.*;
 import ddf.minim.signals.*;
@@ -56,7 +57,10 @@ void setup() {
 
   int samples = 1024;
 
-  input = minim.loadSample("jingle.mp3", samples); 
+   input = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", samples);
+  //input = minim.loadSample("01 Lisztomania.mp3", samples); 
+  //input = minim.loadSample("06 Fortunate Son 1.mp3", samples); 
+  //input = minim.loadSample("jingle.mp3", samples); 
   songLength = input.length();
 
   fft = new FFT( input.bufferSize(), input.sampleRate() );
@@ -97,19 +101,36 @@ void setup() {
   for (int chunk = 0; chunk<leftChunks.length; chunk++) {
     fft.forward(leftChunks[chunk], rightChunks[chunk]);
 
-    // Run thru neural network...
+    //Run thru neural network...
     MLData dataIn = pack(spectrum(fft));
     MLData dataOut = net.compute(dataIn);
-    // ...then put back in buffer
+    //...then put back in buffer
     buffer[chunk] = unpack(dataOut);
+  
 
-    // filter
-    for (int i = 0; i < buffer[chunk].length; i++) {
-      if (buffer[chunk][i] < 0.01) {
-        //buffer[chunk][i] = 0;
-        fft.setFreq(i,0);
-      }else{
-        fft.setFreq(i,4*buffer[chunk][i]);
+  //finds the 10 loudest bands to keep (but only 0.5 and above
+    float[] bands= new float[fft.specSize()];
+    for (int i=0; i<fft.specSize (); i++) {
+      bands[i] = fft.getBand(i);
+    }
+
+    Arrays.sort(bands);
+    int smIndex = bands.length-10;
+    for (int i=smIndex; i<bands.length; i++) {
+      if (bands[smIndex]<0.5) {
+        smIndex--;
+      }
+    }
+    float smallest = bands[smIndex];
+    if (smallest<0.5) {
+      smallest = bands[bands.length-1];
+    }
+
+    for (int i=0; i<fft.specSize (); i++) {
+      if (fft.getBand(i)<smallest) {
+        fft.setBand(i, 0);
+      } else {
+        //println(chunk+" "+i+" "+fft.indexToFreq(i));
       }
     }
 
@@ -140,7 +161,7 @@ void setup() {
 
 void draw() {
   background(0);
-  
+
   fill(255);
   textSize(16);
   textAlign(LEFT, TOP);
@@ -162,12 +183,14 @@ void keyPressed() {
   case 'I': 
   case 'i':
     input.trigger();
+    //output.trigger();
     output.stop();
     break;
   case 'O': 
   case 'o':
     output.trigger();
     input.stop();
+    //output.stop();
   }
 }
 
@@ -180,3 +203,5 @@ void drawWaveform(AudioSample sample, color c) {
     line(x1, 150 + sample.right.get(i) * 50, x2, 150 + sample.right.get(i+1) * 50);
   }
 }
+
+
