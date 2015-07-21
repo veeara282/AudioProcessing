@@ -57,7 +57,7 @@ void setup() {
 
   int samples = 1024;
 
-   input = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", samples);
+  input = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", samples);
   //input = minim.loadSample("01 Lisztomania.mp3", samples); 
   //input = minim.loadSample("06 Fortunate Son 1.mp3", samples); 
   //input = minim.loadSample("jingle.mp3", samples); 
@@ -95,7 +95,8 @@ void setup() {
     }
   }
 
-  float[][] buffer = new float[numChunks+1][samples]; //the empty arrays used to store the values from the inverse fft
+  float[][] buffer = new float[numChunks+1][fft.specSize()]; //the arrays used to store data from the neural network
+  float[][] buffer2 = new float[numChunks+1][fft.specSize()]; //the empty arrays used to store the values from the inverse fft
 
   //runs each chunk through the forward fft and back
   for (int chunk = 0; chunk<leftChunks.length; chunk++) {
@@ -106,35 +107,12 @@ void setup() {
     MLData dataOut = net.compute(dataIn);
     //...then put back in buffer
     buffer[chunk] = unpack(dataOut);
-  
 
-  //finds the 10 loudest bands to keep (but only 0.5 and above
-    float[] bands= new float[fft.specSize()];
-    for (int i=0; i<fft.specSize (); i++) {
-      bands[i] = fft.getBand(i);
-    }
 
-    Arrays.sort(bands);
-    int smIndex = bands.length-10;
-    for (int i=smIndex; i<bands.length; i++) {
-      if (bands[smIndex]<0.5) {
-        smIndex--;
-      }
-    }
-    float smallest = bands[smIndex];
-    if (smallest<0.5) {
-      smallest = bands[bands.length-1];
-    }
+    //finds the 10 loudest bands to keep (but only 0.5 and above
+    filter(buffer[chunk]);
 
-    for (int i=0; i<fft.specSize (); i++) {
-      if (fft.getBand(i)<smallest) {
-        fft.setBand(i, 0);
-      } else {
-        //println(chunk+" "+i+" "+fft.indexToFreq(i));
-      }
-    }
-
-    fft.inverse(buffer[chunk]);
+    fft.inverse(buffer2[chunk]);
   }
 
   float[] allChunks = new float[leftChannel.length]; //array of all samples in the song
@@ -157,8 +135,34 @@ void setup() {
   //plays the song
   //  output.trigger();
 }
+void filter(float[] buffer) {
+  float[] bands= new float[fft.specSize()];
+  for (int i=0; i<fft.specSize (); i++) {
+    //bands[i] = fft.getBand(i);
+    bands[i] = buffer[i];
+  }
 
+  Arrays.sort(bands);
+  int smIndex = bands.length-10;
+  for (int i=smIndex; i<bands.length; i++) {
+    if (bands[smIndex]<0.5 && smIndex<bands.length-1) {
+      smIndex++;
+    }
+  }
 
+  float smallest = bands[smIndex];
+  if (smallest<0.5) {
+    smallest = bands[bands.length-1];
+  }
+
+  for (int i=0; i<fft.specSize (); i++) {
+    if (fft.getBand(i)<smallest) {
+      fft.setBand(i, 0);
+    } else {
+      //println(i+" "+fft.getBand(i));
+    }
+  }
+}
 void draw() {
   background(0);
 
@@ -203,5 +207,4 @@ void drawWaveform(AudioSample sample, color c) {
     line(x1, 150 + sample.right.get(i) * 50, x2, 150 + sample.right.get(i+1) * 50);
   }
 }
-
 
