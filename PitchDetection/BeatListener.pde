@@ -55,12 +55,8 @@ class BeatListener {
   }
 
   float ampRange(int midi) {
-    float totAmp = 0.0;
-    int min = minBand(midi), max = maxBand(midi), diff = max - min;
-    for (int band = min; band <= max; band++) {
-      totAmp += fft.getBand(band) / fft.indexToFreq(band);
-    }
-    return totAmp;// / diff;
+    float min = minFreq(midi), max = maxFreq(midi);
+    return fft.calcAvg(min, max);
   }
 }
 

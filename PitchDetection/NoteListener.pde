@@ -17,6 +17,7 @@ class NoteListener {
   
   void notePlayed(float amp) {
     rad = 5 + 10 * sqrt(amp);
+    // rad = 15 + 10 * log(amp);
   }
   
   void draw() {
