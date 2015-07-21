@@ -22,9 +22,16 @@ class NoteListener {
   void draw() {
     noStroke();
     fill(c);
-    ellipseMode(RADIUS);
     ellipse(x, y, rad, rad);
-//    rad -= 1;
-//    if (rad < 5) rad = 5;
+    // A4
+    if (midi == 69) {
+      colorMode(RGB, 255, 255, 255, 1);
+      fill(255);
+      textAlign(CENTER, CENTER);
+      text("A4", x, y);
+    }
+    // resets after
+    rad -= 1;
+    if (rad < 5) rad = 5;
   }
 }

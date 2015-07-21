@@ -25,7 +25,7 @@ class BeatListener {
       //      if (beatDetect.isRange(min, max, (max - min) / 2)) {
       //      float f = freq(l.midi);
       float amp = ampRange(l.midi);
-      if (amp >= 0.5) {
+      if (amp >= threshold) {
         l.notePlayed(amp);
       }
       l.draw();
@@ -43,7 +43,7 @@ class BeatListener {
   }
 
   float maxFreq(int midi) {
-    return 440.0 * pow(SEMITONE, midi - 69) * sqrt(SEMITONE);
+    return 440.0 * pow(SEMITONE, midi - 69 + 0.5);
   }
 
   int minBand(int midi) {
@@ -60,7 +60,7 @@ class BeatListener {
     for (int band = min; band <= max; band++) {
       totAmp += fft.getBand(band) / fft.indexToFreq(band);
     }
-    return totAmp / diff;
+    return totAmp;// / diff;
   }
 }
 
