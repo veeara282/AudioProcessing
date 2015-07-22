@@ -1,14 +1,3 @@
-/**
- * This sketch demonstrates how to use the BeatDetect object song SOUND_ENERGY mode.<br />
- * You must call <code>detect</code> every frame and then you can use <code>isOnset</code>
- * to track the beat of the music.
- * <p>
- * This sketch plays an entire song, so it may be a little slow to load.
- * <p>
- * For more information about Minim and additional features, 
- * visit http://code.compartmental.net/minim/
- */
-
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 
