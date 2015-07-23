@@ -17,6 +17,66 @@
 
 int REAL, IMAGINARY;
 
+class HighPassPart implements Runnable {
+  
+  FFT orig;
+  
+  FFT result;
+  
+  public LowPassPart(FFT fft) {
+    orig = fft;
+    result = new FFT(orig.timeSize(), orig.sampleRate());
+  }
+  
+  @Override
+  public void run() {
+    // let this run in parallel
+    LowPassPart lp = new LowPassPart(orig);
+    new Thread(lp).start();
+    
+    float[] real = highPass(orig, REAL), imag = highPass(orig, IMAGINARY);
+
+    float[] unfft = new float[orig.timeSize()];
+    result.inverse(real, imag, unfft);
+    // half wave rectify
+    for (int i = 0; i < unfft.length; i++) {
+      if (unfft[i] < 0) {
+        unfft[i] = 0;
+      }
+    }
+    result.forward(unfft);
+    
+    // check on lp
+    do {
+      // nothing
+    } while (!lp.done);
+    result = combine(result, lp.result);
+    
+    autocorrelation(result);
+  }
+}
+
+class LowPassPart implements Runnable {
+  
+  FFT orig;
+  
+  FFT result;
+  
+  boolean done;
+  
+  public LowPassPart(FFT fft) {
+    orig = fft;
+    result = new FFT(orig.timeSize(), orig.sampleRate());
+  }
+  
+  @Override
+  public void run() {
+    float[] real = lowPass(orig, REAL), imag = lowPass(orig, IMAGINARY);
+    result.setComplex(real, imag);
+    done = true;
+  }
+}
+
 // Actually a band pass:
 //
 // "One more detail of implementation is that actually the two
@@ -46,6 +106,18 @@ float[] highPass(FFT fft) {
   return yolo;  
 }
 
+FFT combine(FFT one, FFT another) {
+  FFT result = new FFT(one.timeSize(), one.sampleRate());
+  float[] real1 = one.getSpectrumReal(), imag1 = one.getSpectrumImaginary(),
+          real2 = another.getSpectrumReal(), imag2 = another.getSpectrumImaginary();
+  for (int i = 0; i < result.specSize(); i++) {
+    real1[i] += real2[i];
+    imag1[i] += imag2[i];
+  }
+  result.setComplex(real1, imag1);
+  return result;
+}
+
 // Autocorrelation algorithm based on FFT
 // http://stackoverflow.com/a/3950552/2276567
 void autocorrelation(FFT fft) {
@@ -60,49 +132,4 @@ void autocorrelation(FFT fft) {
     yolo[i] = Math.cbrt(yolo[i]);
   }
   fft.setComplex(yolo, swag);
-}
-
-class LowPassPart implements Runnable {
-  
-  FFT orig;
-  
-  public LowPassPart(FFT fft) {
-    orig = fft;
-  }
-  
-  @Override
-  public void run() {
-    float[] real = lowPass(orig, REAL), imag = lowPass(orig, IMAGINARY);
-
-    FFT fft = new FFT(orig.timeSize(), orig.sampleRate());
-    fft.setComplex(real, imag);
-  }
-}
-
-
-class HighPassPart implements Runnable {
-  
-  FFT orig;
-  
-  public LowPassPart(FFT fft) {
-    orig = fft;
-  }
-  
-  @Override
-  public void run() {
-    float[] real = highPass(orig, REAL), imag = highPass(orig, IMAGINARY);
-
-    float[] unfft = new float[orig.timeSize()];
-    FFT fft = new FFT(orig.timeSize(), orig.sampleRate());
-    fft.inverse(real, imag, unfft);
-    
-    // half wave rectify
-    for (int i = 0; i < unfft.length; i++) {
-      if (unfft[i] < 0) {
-        unfft[i] = 0;
-      }
-    }
-    
-    fft.forward(unfft);
-  }
 }
