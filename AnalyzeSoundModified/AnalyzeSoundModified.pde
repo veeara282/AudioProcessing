@@ -23,20 +23,20 @@ void setup() {
   played = false;
   size(1024, 200, P3D);
   minim = new Minim(this);
-  
+
   //the song store all notes played
   thisSong = new Song(60);
-  
+
   //jingle = minim.loadSample("jingle.mp3", 1024);
   //jingle = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", 1024);
   jingle = minim.loadSample("01 Lisztomania.mp3", 1024);
-  
+
   fft = new FFT( jingle.bufferSize(), jingle.sampleRate() );
   fft.logAverages(22, 3); //breaks it into octaves
-  
+
   jingle.trigger();
   jingle.mute();
-  
+
   moment = new NineOctaves(); //to store all notes played in each frame
   out = minim.getLineOut();
 }
@@ -76,7 +76,8 @@ void analyze() {
 color drawRect(int i) {
   fill(255);
   noStroke();
-  color c;
+  color c = color(0);
+  
   if (i%9==0) {
     c=color(255, 0, 0);
   } else if (i%9==1) {
@@ -112,7 +113,7 @@ void addLoudest(int i, int xl, color c) {
   int loudestIndex = -1; //index of loudest note
   float loudestAmp = -1; //amplitude of loudest note
   boolean[] loudestIndices = new boolean[12]; //array of loudest notes (true if played, false if not)
-  
+
   //goes through all 12 notes of the octave to find the loudest one
   for (int n=0; n<12; n++) {
     float f = octaves[i].getNote(n).getFreq(); //frequency of the note
@@ -127,84 +128,100 @@ void addLoudest(int i, int xl, color c) {
     }
   }
 
-  loudestIndices[loudestIndex] = true;
+  float threshold = 3*loudestAmp/4.0;
+  boolean aboveOctaveThreshold = false;
+  //we need to set a general threshold for each octave as well
+  switch(i) {
+  case 0: aboveOctaveThreshold = threshold>=100; 
+    break;
+  case 1: aboveOctaveThreshold = threshold>=100;  
+    break;
+  case 2: aboveOctaveThreshold = threshold>=80; 
+    break;
+  case 3: aboveOctaveThreshold = threshold>=80; 
+    break;
+  case 4: aboveOctaveThreshold = threshold>=30;  
+    break;
+  case 5: aboveOctaveThreshold = threshold>=10;  
+    break;
+  case 6: aboveOctaveThreshold = threshold>=5;  
+    break;
+  case 7: aboveOctaveThreshold = threshold>=5;   
+    break;
+  case 8: aboveOctaveThreshold = threshold>=5;  
+    break;
+  }
+
+  if (aboveOctaveThreshold) {
+    //goes through all 12 notes of the octave to find ones louder than the threshold
+    for (int n=0; n<12; n++) {
+      float f = octaves[i].getNote(n).getFreq(); //frequency of the note
+      float a = fft.getBand(fft.freqToIndex(f)); //amlitude of the note
+      if (a>=threshold) {
+        loudestIndices[n] = true; //puts the note in an array
+      }
+    }
+  }
 
   //draws an ellipse where the note is
   fill(c);
-  ellipse(i*100-10+50, loudestIndex*12+50, loudestAmp/5, loudestAmp/5);
+  for (int n=0; n<12; n++) {
+    float f = octaves[i].getNote(n).getFreq(); //frequency of the note
+    float a = fft.getBand(fft.freqToIndex(f)); //amlitude of the note
+    if (loudestIndices[n]) {
+      ellipse(i*100-10+50, n*12+50, a/5, a/5);
+    }
+  }
 
   if (i<9) {//done for all the first 9 octaves
-    float f = octaves[i].getNote(loudestIndex).getFreq(); //frequency of loudest note
-    float a = fft.getBand(fft.freqToIndex(f)); //amplitude of loudest note
-    a = (int)a-(int)a%10; //simplified amplitude (perhaps unecessary?)
-    boolean loudEnough = false; //this boolean will be used to determine if the note should be played at all
+    for (int n=0; n<12; n++) {
+      if (loudestIndices[n]) {
+        float f = octaves[i].getNote(n).getFreq(); //frequency of loudest note
+        float a = fft.getBand(fft.freqToIndex(f)); //amplitude of loudest note
+        a = (int)a-(int)a%10; //simplified amplitude (perhaps unecessary?)
+        boolean loudEnough = false; //this boolean will be used to determine if the note should be played at all
 
-    //println(a);
+        //println(a);
+        loudEnough = a>0;
 
-    //these if statements check if the loudest note is loud enough to play
-    //the thresholds are determined manually, but in the future they should be determined through code
-    //for each octave
-    if (i==0 || i==1) {
-      loudEnough = a>=100;
-    } else if (i==2) {
-      loudEnough = a>=100;
-    } else if (i==3) {
-      loudEnough = a>10;
-    } else if (i==4) {
-      if (loudestIndex==0 || loudestIndex==7) {
-        loudEnough=a>0;
-      }
-    } else if (i==5) {
-      //loudEnough=a>0;
-      if (loudestIndex==0 || loudestIndex==7) {
-        loudEnough=a>0;
-      }
-    } else if (i==6) {
-      if (loudestIndex==0 || loudestIndex==7) {
-        loudEnough=a>0;
-      }
-    } else if (i==7) {
-      loudEnough = a>0;
-    } else if (i==8) {
-      loudEnough = a>0;
-    }
+        //if the note is loud enough to play...
+        if (loudEnough) {
+          //if the note hadn't been played in the frame before, play it now
+          if (moment.getOctave(i).getNote(n).getPlayed()==0 ) {
+            //the "played" variable of the Note class determines if it is being played
+            //if played==0: not played
+            //if played==2: played for the first time
+            //if played==1: note still sounding after being played previously for the first time (don't play again)
+            moment.getOctave(i).getNote(n).setPlayed(2);
+          }
+          //if the note was already started, don't play again
+          else if (moment.getOctave(i).getNote(n).getPlayed()==2) {
+            moment.getOctave(i).getNote(n).setPlayed(1);
+          }
 
-   //if the note is loud enough to play...
-    if (loudEnough) {
-      //if the note hadn't been played in the frame before, play it now
-      if (moment.getOctave(i).getNote(loudestIndex).getPlayed()==0 ) {
-        //the "played" variable of the Note class determines if it is being played
-        //if played==0: not played
-        //if played==2: played for the first time
-        //if played==1: note still sounding after being played previously for the first time (don't play again)
-        moment.getOctave(i).getNote(loudestIndex).setPlayed(2);
-      }
-      //if the note was already started, don't play again
-      else if (moment.getOctave(i).getNote(loudestIndex).getPlayed()==2) {
-        moment.getOctave(i).getNote(loudestIndex).setPlayed(1);
-      }
-      
-      //if it should be played...
-      if (moment.getOctave(i).getNote(loudestIndex).getPlayed()==2) {
-        if (i==0 || i==1) {
-          //the for loop plays each note in these two octaves twice, to make them louder
-          for (int k=0; k<2; k++) {
-            out.playNote(count*1.0/1000.0, 0.1, moment.getOctave(i).getNote(loudestIndex).getFreq());
+          //if it should be played...
+          if (moment.getOctave(i).getNote(n).getPlayed()==2) {
+            if (i==0 || i==1) {
+              //the for loop plays each note in these two octaves twice, to make them louder
+              for (int k=0; k<1; k++) {
+                out.playNote(count*1.0/1000.0, 0.1, moment.getOctave(i).getNote(n).getFreq());
+              }
+            } else {
+              //all notes in other octaves play only once
+              out.playNote(count*1.0/1000.0, 0.1, moment.getOctave(i).getNote(n).getFreq());
+            }
           }
         } else {
-          //all notes in other octaves play only once
-          out.playNote(count*1.0/1000.0, 0.1, moment.getOctave(i).getNote(loudestIndex).getFreq());
+          //if it should not be played, update the note's "played" variable
+          moment.getOctave(i).getNote(n).setPlayed(0);
         }
       }
-    } else {
-      //if it should not be played, update the note's "played" variable
-      moment.getOctave(i).getNote(loudestIndex).setPlayed(0);
     }
   }
 
   //updates the "played" variable for all the notes not played
   for (int n=0; n<12; n++) {
-    if (n!=loudestIndex) {
+    if (!loudestIndices[n]) {
       moment.getOctave(i).getNote(n).setPlayed(0);
     }
   }
