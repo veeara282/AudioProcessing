@@ -8,7 +8,6 @@ AudioOutput out;
 int counter, newCounter;
 boolean played;
 float spectrumScale = 4;
-boolean[][] notes = new boolean[12*8][9080];
 Octave[] octaves = new Octave[9];
 Song thisSong;
 float count;
@@ -76,27 +75,17 @@ void analyze() {
 color drawRect(int i) {
   fill(255);
   noStroke();
-  color c;
-  if (i%9==0) {
-    c=color(255, 0, 0);
-  } else if (i%9==1) {
-    c=color(255, 100, 0);
-  } else if (i%9==2) {
-    c=color(255, 255, 0);
-  } else if (i%9==3) {
-    c=color(0, 255, 0);
-  } else if (i%9==4) {
-    c=color(0, 0, 255);
-  } else if (i%9==5) {
-    c=color(255, 0, 255);
-  } else if (i%9==6) {
-    c=color(0, 255, 255);
-  } else if (i%9==7) {
-    c=color(100, 100, 100);
-  } else if (i%9==8) {
-    c=color(255, 255, 255);
-  } else {
-    c=color(100);
+  color c = 0;
+  switch (i % 9) {
+    case 0: c = color(255, 0, 0); break;
+    case 1: c = color(255, 100, 0); break;
+    case 2: c = color(255, 255, 0); break;
+    case 3: c = color(0, 255, 0); break;
+    case 4: c = color(0, 0, 255); break;
+    case 5: c = color(255, 0, 255); break;
+    case 6: c = color(0, 255, 255); break;
+    case 7: c = color(100, 100, 100); break;
+    case 8: c = color(255, 255, 255);
   }
 
   fill(c);
