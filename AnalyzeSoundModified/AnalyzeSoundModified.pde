@@ -121,11 +121,11 @@ void addLoudest(int i, int xl, color c) {
   boolean aboveOctaveThreshold = false;
   //we need to set a general threshold for each octave as well
   switch(i) {
-  case 0: aboveOctaveThreshold = threshold>=100; 
+  case 0: aboveOctaveThreshold = threshold>=150; 
     break;
-  case 1: aboveOctaveThreshold = threshold>=100;  
+  case 1: aboveOctaveThreshold = threshold>=150;  
     break;
-  case 2: aboveOctaveThreshold = threshold>=80; 
+  case 2: aboveOctaveThreshold = threshold>=120; 
     break;
   case 3: aboveOctaveThreshold = threshold>=80; 
     break;
