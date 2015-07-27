@@ -70,6 +70,9 @@ void analyze() {
     }
   }
   thisSong.add(moment);
+  
+  // Smooth
+  thisSong.smoothAudio(8);
 }
 
 color drawRect(int i) {
