@@ -4,6 +4,7 @@ class BeatListener {
   FFT fft;
   AudioSource audio;
   ArrayList<NoteListener> listeners;
+  LoudestThree three;
 
   BeatListener(AudioSource src) {
     audio = src;
@@ -14,23 +15,31 @@ class BeatListener {
     for (int i = 0; i < 12; i++) {
       listeners.add(new NoteListener(i));
     }
+    three = new LoudestThree();
   }
 
   // Called each time draw() is called
   void draw() {
-    //    beatDetect.detect(audio.mix);
     fft.forward(audio.left.toArray(), audio.right.toArray());
-    for (NoteListener l : listeners) {
-      //      int min = minBand(l.midi), max = maxBand(l.midi);
-      //      if (beatDetect.isRange(min, max, (max - min) / 2)) {
-      //      float f = freq(l.midi);
+    for (int i = 0; i < 12; i++) {
       float amp = 0;
       for (int octave = 36; octave < 96; octave += 12) {
-        amp += ampRange(octave + l.midi);
+        amp += ampRange(octave + i);
       }
-      if (amp >= threshold) {
-        l.notePlayed(amp);
+      three.set(i, amp);
+    }
+    int loudest = three.getLoudest();
+    int secondLoudest = three.getLoudest(loudest);
+    int thirdLoudest = three.getLoudest(loudest, secondLoudest);
+    for (int ii : new int[]{loudest, secondLoudest, thirdLoudest}) {
+      float amp = three.get(ii);
+      if (amp > threshold) {
+        listeners.get(ii).notePlayed(amp);
       }
+    }
+    
+    // finally draw the note things
+    for (NoteListener l : listeners) {
       l.draw();
     }
   }

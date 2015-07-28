@@ -5,6 +5,8 @@ class NoteListener {
   float x, y, rad;
   color c;
   
+  float amp;
+  
   NoteListener(int midi) {
     this.midi = midi;
     
@@ -13,9 +15,11 @@ class NoteListener {
     rad = 5;
     colorMode(HSB, 12, 1, 1, 1);
     c = color(midi % 12, 1, 1, 0.5);
+    amp = 0;
   }
   
   void notePlayed(float amp) {
+    this.amp = amp;
 //    rad = 5 + 10 * sqrt(amp);
     rad = 15 + 10 * log(amp);
   }
@@ -24,13 +28,8 @@ class NoteListener {
     noStroke();
     fill(c);
     ellipse(x, y, rad, rad);
-    // A4
-    if (midi == 69) {
-      colorMode(RGB, 255, 255, 255, 1);
-      fill(255);
       textAlign(CENTER, CENTER);
-      text("A4", x, y);
-    }
+      text(amp, x, y);
     // resets after
     rad -= 1;
     if (rad < 5) rad = 5;

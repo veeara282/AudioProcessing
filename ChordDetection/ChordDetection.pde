@@ -46,7 +46,7 @@ void draw()
 
 void keyPressed() {
   if (key == CODED) {
-    if (keyCode == UP && threshold < 1.0) {
+    if (keyCode == UP ) {//&& threshold < 1.0) {
       threshold += 0.05;
     }
     if (keyCode == DOWN && threshold > 0) {
