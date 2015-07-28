@@ -1,3 +1,0 @@
-//class AutoTune extends UGen {
-//  
-//}
