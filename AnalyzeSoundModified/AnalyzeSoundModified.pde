@@ -12,11 +12,16 @@ Octave[] octaves = new Octave[9];
 Song thisSong;
 float count;
 NineOctaves moment;
+boolean[] play = {
+  true, true, true, true, true, true, true, true, true,
+};
+float thresholdMult = 7;
+float frames = 1000;
 
 void setup() {
   loadFreqs();
   count=0;
-  frameRate(1000);
+  frameRate(frames);
   counter=0;
   newCounter=0;
   played = false;
@@ -26,9 +31,17 @@ void setup() {
   //the song store all notes played
   thisSong = new Song(60);
 
+  //jingle = minim.loadSample("02 Take the _A_ Train.mp3",1024);
+  //jingle = minim.loadSample("01 Lisztomania.mp3",1024);
+  //jingle = minim.loadSample("06 Karma Police.mp3",1024);
+  //jingle = minim.loadSample("26 Let It Be.mp3",1024);
+  //jingle = minim.loadSample("22 Get Back.mp3",1024);
+  //jingle = minim.loadSample("18 Town Called Malice.mp3",1024);
   //jingle = minim.loadSample("jingle.mp3", 1024);
   //jingle = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", 1024);
-  jingle = minim.loadSample("01 Lisztomania.mp3", 1024);
+  jingle = minim.loadSample("01 Song for My Father.mp3", 1024);
+  //jingle = minim.loadSample("19 The Nutcracker Suite, Op. 71a_ Xiiic. Character Dances - Tea (Chinese Dance)_ Allegro Moderato.mp3", 1024);
+
 
   fft = new FFT( jingle.bufferSize(), jingle.sampleRate() );
   fft.logAverages(22, 3); //breaks it into octaves
@@ -44,7 +57,8 @@ void draw() {
   background(0);
   if (millis()<=jingle.length()/2) {
     analyze();
-    count+=1.0/60.0; //for use with the playNote function later
+    count+=1.0/frames;
+    //count+=1.0/60.0; //for use with the playNote function later
   } else {
     jingle.stop();
   }
@@ -64,7 +78,7 @@ void analyze() {
     int xr = (int)fft.freqToIndex(highFreq);
     color c = color(255);
 
-    if (i<9) {
+    if (i<9 && play[i]) {
       c=drawRect(i);
       addLoudest(i, xl, c);
     }
@@ -78,15 +92,32 @@ color drawRect(int i) {
 
   color c = 0;
   switch (i % 9) {
-    case 0: c = color(255, 0, 0); break;
-    case 1: c = color(255, 100, 0); break;
-    case 2: c = color(255, 255, 0); break;
-    case 3: c = color(0, 255, 0); break;
-    case 4: c = color(0, 0, 255); break;
-    case 5: c = color(255, 0, 255); break;
-    case 6: c = color(0, 255, 255); break;
-    case 7: c = color(100, 100, 100); break;
-    case 8: c = color(255, 255, 255);
+  case 0: 
+    c = color(255, 0, 0); 
+    break;
+  case 1: 
+    c = color(255, 100, 0); 
+    break;
+  case 2: 
+    c = color(255, 255, 0); 
+    break;
+  case 3: 
+    c = color(0, 255, 0); 
+    break;
+  case 4: 
+    c = color(0, 0, 255); 
+    break;
+  case 5: 
+    c = color(255, 0, 255); 
+    break;
+  case 6: 
+    c = color(0, 255, 255); 
+    break;
+  case 7: 
+    c = color(100, 100, 100); 
+    break;
+  case 8: 
+    c = color(255, 255, 255);
   }
 
   fill(c);
@@ -106,7 +137,7 @@ void addLoudest(int i, int xl, color c) {
   //goes through all 12 notes of the octave to find the loudest one
   for (int n=0; n<12; n++) {
     float f = octaves[i].getNote(n).getFreq(); //frequency of the note
-    float a = fft.getBand(fft.freqToIndex(f)); //amlitude of the note
+    float a = fft.getBand(fft.freqToIndex(f)); //amplitude of the note
     if (loudestIndex==-1 && !loudestIndices[n]) { //if it hasn't already been added to loudestIndices
       loudestIndex=n;
       loudestAmp=a;
@@ -117,27 +148,36 @@ void addLoudest(int i, int xl, color c) {
     }
   }
 
-  float threshold = 3*loudestAmp/4.0;
+  float threshold = thresholdMult*loudestAmp/8.0;
   boolean aboveOctaveThreshold = false;
   //we need to set a general threshold for each octave as well
   switch(i) {
-  case 0: aboveOctaveThreshold = threshold>=100; 
+  case 0: 
+    aboveOctaveThreshold = threshold>=128; 
     break;
-  case 1: aboveOctaveThreshold = threshold>=100;  
+  case 1: 
+    aboveOctaveThreshold = threshold>=64;  
     break;
-  case 2: aboveOctaveThreshold = threshold>=80; 
+  case 2: 
+    aboveOctaveThreshold = threshold>=32; 
     break;
-  case 3: aboveOctaveThreshold = threshold>=80; 
+  case 3: 
+    aboveOctaveThreshold = threshold>=16; 
     break;
-  case 4: aboveOctaveThreshold = threshold>=30;  
+  case 4: 
+    aboveOctaveThreshold = threshold>=8;  
     break;
-  case 5: aboveOctaveThreshold = threshold>=10;  
+  case 5: 
+    aboveOctaveThreshold = threshold>=4;  
     break;
-  case 6: aboveOctaveThreshold = threshold>=5;  
+  case 6: 
+    aboveOctaveThreshold = threshold>=2;  
     break;
-  case 7: aboveOctaveThreshold = threshold>=5;   
+  case 7: 
+    aboveOctaveThreshold = threshold>=1;   
     break;
-  case 8: aboveOctaveThreshold = threshold>=5;  
+  case 8: 
+    aboveOctaveThreshold = threshold>=0.5;  
     break;
   }
 
@@ -193,11 +233,11 @@ void addLoudest(int i, int xl, color c) {
             if (i==0 || i==1) {
               //the for loop plays each note in these two octaves twice, to make them louder
               for (int k=0; k<1; k++) {
-                out.playNote(count*1.0/1000.0, 0.1, moment.getOctave(i).getNote(n).getFreq());
+                out.playNote(count*1.0/frames, 0.1, moment.getOctave(i).getNote(n).getFreq());
               }
             } else {
               //all notes in other octaves play only once
-              out.playNote(count*1.0/1000.0, 0.1, moment.getOctave(i).getNote(n).getFreq());
+              out.playNote(count*1.0/frames, 0.1, moment.getOctave(i).getNote(n).getFreq());
             }
           }
         } else {
@@ -221,5 +261,10 @@ void loadFreqs() {
   for (int i=0; i<9; i++) {
     octaves[i] = new Octave(i);
   }
+}
+
+void keyPressed() {
+  int i=key-48;
+  play[i]=!play[i];
 }
 
