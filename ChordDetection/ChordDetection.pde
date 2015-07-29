@@ -11,6 +11,7 @@
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import ddf.minim.ugens.*;
 
 Minim minim;
 AudioPlayer song;
@@ -23,10 +24,11 @@ void setup()
 {
   size(750, 250, P2D);
   minim = new Minim(this);
-  // song = minim.loadFile("../../clips/marcus_kellis_theme.mp3", 2048);
-  song = minim.loadFile("../../clips/01 Lisztomania.mp3", 2048);
+  // song = minim.loadFile("marcus_kellis_theme.mp3", 2048);
+  song = minim.loadFile("01 Lisztomania.mp3", 2048);
   beat = new BeatListener(song);
   song.loop();
+  song.mute();
 
   ellipseMode(RADIUS);
   textSize(16);

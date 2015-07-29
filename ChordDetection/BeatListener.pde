@@ -31,9 +31,9 @@ class BeatListener {
     }
     int loudest = three.getLoudest();
     //println(three.get(loudest)); //not here
-    int secondLoudest = three.getLoudest(loudest);
-    int thirdLoudest = three.getLoudest(loudest, secondLoudest);
-    for (int ii : new int[]{loudest, secondLoudest, thirdLoudest}) {
+//    int secondLoudest = three.getLoudest(loudest);
+//    int thirdLoudest = three.getLoudest(loudest, secondLoudest);
+    for (int ii : new int[]{loudest}) {//, secondLoudest, thirdLoudest}) {
       float amp = three.get(ii);
       //println(amp); //not here
       if (amp > threshold) {
@@ -71,7 +71,7 @@ class BeatListener {
 
   float ampRange(int midi) {
     float min = minFreq(midi), max = maxFreq(midi);
-    return fft.calcAvg(min, max);
+    return fft.calcAvg(min, max) / freq(midi);
   }
 }
 

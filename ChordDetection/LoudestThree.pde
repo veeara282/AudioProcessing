@@ -20,7 +20,9 @@ class LoudestThree {
     int loudest = -1;
     float loudestAmp = 0;
     for (int i = 0; i < 12; i++) {
-      if (amplitudes[i] > loudestAmp && !elementOf(i, excl)) {
+      if (amplitudes[i] > loudestAmp && !elementOf(i - 1, excl)
+                                     && !elementOf(i, excl)
+                                     && !elementOf(i + 1, excl)) {
         loudest = i;
         loudestAmp = amplitudes[i];
       }

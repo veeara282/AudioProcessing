@@ -23,8 +23,8 @@ void setup()
 {
   size(87*20, 220, P2D);
   minim = new Minim(this);
-  // song = minim.loadFile("../../clips/marcus_kellis_theme.mp3", 2048);
-  song = minim.loadFile("../../clips/01 Lisztomania.mp3", 2048);
+  // song = minim.loadFile("marcus_kellis_theme.mp3", 2048);
+  song = minim.loadFile("01 Lisztomania.mp3", 2048);
   beat = new BeatListener(song);
   song.loop();
 
