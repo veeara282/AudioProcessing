@@ -27,12 +27,15 @@ class BeatListener {
         amp += ampRange(octave + i);
       }
       three.set(i, amp);
+     // println(three.get(i)); //here
     }
     int loudest = three.getLoudest();
+    //println(three.get(loudest)); //not here
     int secondLoudest = three.getLoudest(loudest);
     int thirdLoudest = three.getLoudest(loudest, secondLoudest);
     for (int ii : new int[]{loudest, secondLoudest, thirdLoudest}) {
       float amp = three.get(ii);
+      //println(amp); //not here
       if (amp > threshold) {
         listeners.get(ii).notePlayed(amp);
       }
