@@ -31,9 +31,9 @@ class BeatListener {
     }
     int loudest = three.getLoudest();
     //println(three.get(loudest)); //not here
-//    int secondLoudest = three.getLoudest(loudest);
-//    int thirdLoudest = three.getLoudest(loudest, secondLoudest);
-    for (int ii : new int[]{loudest}) {//, secondLoudest, thirdLoudest}) {
+    int secondLoudest = three.getLoudest(loudest);
+    int thirdLoudest = three.getLoudest(loudest, secondLoudest);
+    for (int ii : new int[]{loudest, secondLoudest, thirdLoudest}) {
       float amp = three.get(ii);
       //println(amp); //not here
       if (amp > threshold) {
@@ -44,6 +44,11 @@ class BeatListener {
     // finally draw the note things
     for (NoteListener l : listeners) {
       l.draw();
+      if (l.midi != loudest
+       && l.midi != secondLoudest
+       && l.midi != thirdLoudest) {
+         l.notePlayed(0);
+       }
     }
   }
 

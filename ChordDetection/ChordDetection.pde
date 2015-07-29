@@ -20,20 +20,22 @@ BeatListener beat;
 
 float threshold;
 
+boolean playOriginal = false;
+
 void setup()
 {
   size(750, 250, P2D);
   minim = new Minim(this);
   // song = minim.loadFile("marcus_kellis_theme.mp3", 2048);
-  song = minim.loadFile("01 Lisztomania.mp3", 2048);
+  song = minim.loadFile("cello.mp3", 2048);
   beat = new BeatListener(song);
   song.loop();
-  song.mute();
+  if (!playOriginal) song.mute();
 
   ellipseMode(RADIUS);
   textSize(16);
   
-  threshold = 0;
+  threshold = 0.3;
 }
 
 void draw()
@@ -41,6 +43,7 @@ void draw()
   background(0);
   beat.draw();
   
+  colorMode(RGB, 255, 255, 255, 255);
   fill(255);
   textAlign(LEFT, TOP);
   text(""+threshold, 10, 10);
