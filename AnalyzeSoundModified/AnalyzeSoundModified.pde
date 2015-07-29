@@ -31,17 +31,17 @@ void setup() {
   //the song store all notes played
   thisSong = new Song(60);
 
-  //jingle = minim.loadSample("02 Take the _A_ Train.mp3",1024);
-  //jingle = minim.loadSample("01 Lisztomania.mp3",1024);
-  //jingle = minim.loadSample("06 Karma Police.mp3",1024);
-  //jingle = minim.loadSample("26 Let It Be.mp3",1024);
-  //jingle = minim.loadSample("22 Get Back.mp3",1024);
-  //jingle = minim.loadSample("18 Town Called Malice.mp3",1024);
-  //jingle = minim.loadSample("jingle.mp3", 1024);
-  //jingle = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", 1024);
-  //jingle = minim.loadSample("01 Song for My Father.mp3", 1024);
-  //jingle = minim.loadSample("19 The Nutcracker Suite, Op. 71a_ Xiiic. Character Dances - Tea (Chinese Dance)_ Allegro Moderato.mp3", 1024);
-  jingle = minim.loadSample("jesses_girl.mp3", 1024);
+  //jingle = minim.loadSample("../../clips/02 Take the _A_ Train.mp3",1024);
+  //jingle = minim.loadSample("../../clips/01 Lisztomania.mp3",1024);
+  //jingle = minim.loadSample("../../clips/06 Karma Police.mp3",1024);
+  //jingle = minim.loadSample("../../clips/26 Let It Be.mp3",1024);
+  //jingle = minim.loadSample("../../clips/22 Get Back.mp3",1024);
+  //jingle = minim.loadSample("../../clips/18 Town Called Malice.mp3",1024);
+  //jingle = minim.loadSample("../../clips/jingle.mp3", 1024);
+  //jingle = minim.loadSample("../../clips/1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", 1024);
+  //jingle = minim.loadSample("../../clips/01 Song for My Father.mp3", 1024);
+  //jingle = minim.loadSample("../../clips/19 The Nutcracker Suite, Op. 71a_ Xiiic. Character Dances - Tea (Chinese Dance)_ Allegro Moderato.mp3", 1024);
+  jingle = minim.loadSample("../../clips/jesses_girl.mp3", 1024);
 
 
   fft = new FFT( jingle.bufferSize(), jingle.sampleRate() );
