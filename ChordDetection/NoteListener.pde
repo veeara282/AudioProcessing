@@ -2,9 +2,6 @@ class NoteListener {
   
   int midi;
   
-  Oscil oscil;
-  Midi2Hz cvtr;
-  
   float x, y, rad;
   color c;
   
@@ -19,11 +16,6 @@ class NoteListener {
     colorMode(HSB, 12, 1, 1, 1);
     c = color(midi % 12, 1, 1, 0.5);
     amp = 0;
-    
-    cvtr = new Midi2Hz(midi + 60);
-    oscil = new Oscil(300, 0.1, Waves.TRIANGLE);
-    cvtr.patch(oscil.frequency);
-    if (playConverted) oscil.patch(minim.getLineOut());
   }
   
   void notePlayed(float amp) {
@@ -39,7 +31,6 @@ class NoteListener {
       textAlign(CENTER, CENTER);
       text(amp, x, y);
       println(midi + " " + amp);
-      oscil.setAmplitude(amp>1/3.0 ? 1/3.0 : amp);
     // resets after
 //    rad -= 1;
 //    if (rad < 5) 

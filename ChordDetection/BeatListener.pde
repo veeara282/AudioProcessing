@@ -29,27 +29,7 @@ class BeatListener {
       three.set(i, amp);
      // println(three.get(i)); //here
     }
-    int loudest = three.getLoudest();
-    //println(three.get(loudest)); //not here
-    int secondLoudest = three.getLoudest(loudest);
-    int thirdLoudest = three.getLoudest(loudest, secondLoudest);
-    for (int ii : new int[]{loudest, secondLoudest, thirdLoudest}) {
-      float amp = three.get(ii);
-      //println(amp); //not here
-      if (amp > threshold) {
-        listeners.get(ii).notePlayed(amp);
-      }
-    }
-    
-    // finally draw the note things
-    for (NoteListener l : listeners) {
-      l.draw();
-      if (l.midi != loudest
-       && l.midi != secondLoudest
-       && l.midi != thirdLoudest) {
-         l.notePlayed(0);
-       }
-    }
+    three.draw();
   }
 
   final float SEMITONE = pow(2, 1/12.0);
