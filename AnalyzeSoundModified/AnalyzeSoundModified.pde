@@ -39,8 +39,9 @@ void setup() {
   //jingle = minim.loadSample("18 Town Called Malice.mp3",1024);
   //jingle = minim.loadSample("jingle.mp3", 1024);
   //jingle = minim.loadSample("1-21 Thank You (Falettinme Be Mice Elf Agin).mp3", 1024);
-  jingle = minim.loadSample("01 Song for My Father.mp3", 1024);
+  //jingle = minim.loadSample("01 Song for My Father.mp3", 1024);
   //jingle = minim.loadSample("19 The Nutcracker Suite, Op. 71a_ Xiiic. Character Dances - Tea (Chinese Dance)_ Allegro Moderato.mp3", 1024);
+  jingle = minim.loadSample("jesses_girl.mp3", 1024);
 
 
   fft = new FFT( jingle.bufferSize(), jingle.sampleRate() );
@@ -84,7 +85,7 @@ void analyze() {
     }
   }
   thisSong.add(moment);
-  
+
   // Smooth
   thisSong.smoothAudio(8);
 }
