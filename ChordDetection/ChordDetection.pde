@@ -20,7 +20,8 @@ BeatListener beat;
 
 float threshold;
 
-boolean playOriginal = false;
+boolean playOriginal = true;
+boolean playConverted = true;
 
 void setup()
 {

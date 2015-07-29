@@ -21,9 +21,9 @@ class NoteListener {
     amp = 0;
     
     cvtr = new Midi2Hz(midi + 60);
-    oscil = new Oscil(300, 0.1, Waves.SINE);
+    oscil = new Oscil(300, 0.1, Waves.TRIANGLE);
     cvtr.patch(oscil.frequency);
-    if (!playOriginal) oscil.patch(minim.getLineOut());
+    if (playConverted) oscil.patch(minim.getLineOut());
   }
   
   void notePlayed(float amp) {
