@@ -27,8 +27,8 @@ void setup()
 {
   size(750, 250, P2D);
   minim = new Minim(this);
-  // song = minim.loadFile("marcus_kellis_theme.mp3", 2048);
-  song = minim.loadFile("cello.mp3", 2048);
+  song = minim.loadFile("lisztomania.mp3", 2048);
+  //song = minim.loadFile("cello.mp3", 2048);
   beat = new BeatListener(song);
   song.loop();
   if (!playOriginal) song.mute();

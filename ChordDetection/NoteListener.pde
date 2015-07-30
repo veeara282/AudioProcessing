@@ -30,7 +30,7 @@ class NoteListener {
     ellipse(x, y, rad, rad);
       textAlign(CENTER, CENTER);
       text(amp, x, y);
-      println(midi + " " + amp);
+//      println(midi + " " + amp);
     // resets after
 //    rad -= 1;
 //    if (rad < 5) 
